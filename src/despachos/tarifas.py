@@ -81,3 +81,22 @@ def desglose(envio: Envio) -> dict[str, float]:
         "factor_zona": factor,
         "total": calcular(envio),
     }
+
+
+def clasificar_nivel_servicio(envio: Envio) -> str:
+    """Determina el nivel operativo requerido para un envio."""
+    if aplica_envio_gratis(envio):
+        return "economico"
+    if envio.urgente and envio.zona in ZONAS_ALEJADAS:
+        return "critico"
+    if envio.urgente:
+        return "prioritario"
+    if envio.peso_kg > 30:
+        return "carga_pesada"
+    if envio.valor_declarado >= 1000:
+        return "alto_valor"
+    if envio.zona in ZONAS_ALEJADAS:
+        return "rural"
+    if envio.peso_kg <= 2:
+        return "ligero"
+    return "estandar"

@@ -2,10 +2,14 @@ name: pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-
   validar:
     name: Validar
     runs-on: ubuntu-latest
@@ -31,6 +35,9 @@ jobs:
         run: pytest --cov=src --cov-report=xml
 
       - name: Analisis de calidad
+        run: diff-cover coverage.xml --compare-branch=origin/main --fail-under=100
+
+      - name: Quality gate de SonarCloud
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -66,7 +73,7 @@ jobs:
 
       - name: Leer version
         id: get_version
-        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(cat VERSION)" >> "$GITHUB_OUTPUT"
 
       - name: Construir el paquete
         run: python -m build
@@ -77,3 +84,4 @@ jobs:
           name: despachos-${{ steps.get_version.outputs.VERSION }}
           path: dist/
           overwrite: true
+
