@@ -80,3 +80,22 @@ def agrupar_por_cliente(pedidos: list[Pedido]) -> dict[str, list[Pedido]]:
 
 def pedidos_abiertos(pedidos: list[Pedido]) -> list[Pedido]:
     return [p for p in pedidos if not p.esta_cerrado()]
+
+
+def clasificar_prioridad(pedido: Pedido) -> str:
+    """Clasifica un pedido para ordenar la atencion del despacho."""
+    if pedido.estado is Estado.ANULADO:
+        return "sin_atencion"
+    if pedido.estado is Estado.ENTREGADO:
+        return "completado"
+    if pedido.unidades() == 0:
+        return "pendiente_de_carga"
+    if pedido.total() >= 1000:
+        return "alta"
+    if pedido.total() >= 500 or pedido.unidades() >= 20:
+        return "media"
+    if pedido.estado is Estado.REGISTRADO:
+        return "normal"
+    if pedido.estado is Estado.PREPARADO:
+        return "lista_para_despacho"
+    return "en_ruta"
