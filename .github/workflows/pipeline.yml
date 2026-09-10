@@ -35,6 +35,9 @@ jobs:
         run: pytest --cov=src --cov-report=xml
 
       - name: Analisis de calidad
+        run: diff-cover coverage.xml --compare-branch=origin/main --fail-under=100
+
+      - name: Quality gate de SonarCloud
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
